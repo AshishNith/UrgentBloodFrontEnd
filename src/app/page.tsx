@@ -15,8 +15,8 @@ export default function page() {
       <FloatingNavDemo/>
       <LampDemo />
       <CurrentLocation />
-      <Map/>
       <WorldMapDemo/>
+      <Map/>
       <TimelineDemo/>
       <ChatBot /> 
       
