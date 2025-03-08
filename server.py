@@ -1,32 +1,40 @@
-import sys
-import json
-from openai import OpenAI
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from langchain_ollama import OllamaLLM
 
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key="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",
-)
+app = Flask(__name__)
+CORS(app)
 
-def chat(user_message):
-    completion = client.chat.completions.create(
-        # extra_headers={
-        #     "HTTP-Referer": "<YOUR_SITE_URL>",  # Optional. Site URL for rankings on openrouter.ai.
-        #     "X-Title": "<YOUR_SITE_NAME>",  # Optional. Site title for rankings on openrouter.ai.
-        # },
-        # extra_body={},
-        model="deepseek/deepseek-r1-zero:free",
-        messages=[
-            {
-                "role": "user",
-                "content": user_message
-            }
-        ]
-    )
-    
-    response_message = completion.choices[0].message.content
-    return json.dumps({"response": response_message})
+model = OllamaLLM(model="llama3")
+
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    try:
+        data = request.json
+        user_message = data.get('message', '')
+        
+        # Create a simple prompt for blood donation related queries
+        prompt = f"""
+        You are a helpful blood donation assistant. Answer the following question:
+        {user_message}
+        """
+        
+        # Get response from LangChain
+        response = model.invoke(prompt)
+        
+        print(f"User message: {user_message}")
+        print(f"Bot response: {response}")
+
+        return jsonify({
+            "response": str(response),
+            "status": "success"
+        })
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({
+            "error": str(e),
+            "status": "error"
+        }), 500
 
 if __name__ == '__main__':
-    user_input = input("Enter your message: ")
-    response = chat(user_input)
-    print(response)
+    app.run(debug=True, port=5000)
