@@ -44,14 +44,14 @@ export default function CurrentLocation() {
       <h1 className="text-3xl font-bold text-center mb-8 pt-10 flex items-center justify-center gap-2">
         <FaLocationArrow className="text-blue-500" /> Donors Nearby You
       </h1>
-      <div className="bg-white shadow-lg rounded-lg p-6 max-w-md mx-auto text-center">
+      <div className="bg-white shadow-lg rounded-lg p-6 max-w-md mx-auto text-center mb-4">
         <div className="flex items-center justify-center gap-2">
           {isLoading ? (
             <FaSpinner className="animate-spin text-blue-500" />
           ) : (
             <FaMapMarkerAlt className="text-red-500" />
           )}
-          <p className="text-lg font-medium">
+          <p className="text-lg font-medium ">
             {isLoading ? "Fetching your location..." : `Your location: ${location}`}
           </p>
         </div>
