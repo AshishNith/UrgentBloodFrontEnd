@@ -2,13 +2,58 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { toast } from "react-hot-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const Donors = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [loadingStates, setLoadingStates] = useState<{ [key: number]: boolean }>({});
+  const [notifications, setNotifications] = useState<any[]>([]);
 
-  const handleRequestClick = () => {
-    toast.success("Request sent successfully!");
+  // Load notifications from localStorage on component mount
+  useEffect(() => {
+    const savedNotifications = localStorage.getItem('bloodRequests');
+    if (savedNotifications) {
+      setNotifications(JSON.parse(savedNotifications));
+    }
+  }, []);
+
+  const sendNotificationToDonor = (donor: typeof donors[0]) => {
+    const notification = {
+      id: Date.now(),
+      donorId: donor.id,
+      donorName: donor.name,
+      bloodType: donor.bloodType,
+      timestamp: new Date().toISOString(),
+      status: 'pending'
+    };
+
+    // Save to localStorage
+    const existingNotifications = JSON.parse(localStorage.getItem('bloodRequests') || '[]');
+    const updatedNotifications = [...existingNotifications, notification];
+    localStorage.setItem('bloodRequests', JSON.stringify(updatedNotifications));
+    
+    // Update state
+    setNotifications(updatedNotifications);
+    
+    // Simulate notification delay
+    return new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  const handleRequestClick = async (donor: typeof donors[0], index: number) => {
+    setLoadingStates(prev => ({ ...prev, [index]: true }));
+    
+    try {
+      await sendNotificationToDonor(donor);
+      toast.success(`Request sent to ${donor.name}! They will be notified immediately.`);
+      
+      // Show notification count
+      const count = notifications.length + 1;
+      toast(`You have sent ${count} blood request${count > 1 ? 's' : ''} so far.`);
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [index]: false }));
+    }
   };
 
   return (
@@ -52,10 +97,13 @@ export const Donors = () => {
                 {donor.distance} away from you
               </p>
               <button
-                onClick={handleRequestClick}
-                className="mt-4 px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors w-full"
+                onClick={() => handleRequestClick(donor, idx)}
+                disabled={loadingStates[idx]}
+                className={`mt-4 px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors w-full ${
+                  loadingStates[idx] ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
-                Emergency Request
+                {loadingStates[idx] ? 'Sending Request...' : 'Emergency Request'}
               </button>
             </motion.div>
           </div>
@@ -65,8 +113,10 @@ export const Donors = () => {
   );
 };
 
+// Update the donors array to include IDs
 const donors = [
   {
+    id: 1, // Add IDs to all donor objects
     name: "Rahul Sharma",
     age: 28,
     gender: "Male",
@@ -74,6 +124,7 @@ const donors = [
     distance: "0.5km",
   },
   {
+    id: 2,
     name: "Priya Patel",
     age: 25,
     gender: "Female",
@@ -81,6 +132,7 @@ const donors = [
     distance: "0.8km",
   },
   {
+    id: 3,
     name: "Amit Singh",
     age: 30,
     gender: "Male",
@@ -88,6 +140,7 @@ const donors = [
     distance: "0.3km",
   },
   {
+    id: 4,
     name: "Neha Gupta",
     age: 22,
     gender: "Female",
@@ -95,6 +148,7 @@ const donors = [
     distance: "0.7km",
   },
   {
+    id: 5,
     name: "Vikram Yadav",
     age: 35,
     gender: "Male",
@@ -102,6 +156,7 @@ const donors = [
     distance: "0.9km",
   },
   {
+    id: 6,
     name: "Anjali Desai",
     age: 27,
     gender: "Female",
@@ -109,6 +164,7 @@ const donors = [
     distance: "0.6km",
   },
   {
+    id: 7,
     name: "Rajesh Kumar",
     age: 40,
     gender: "Male",
@@ -116,6 +172,7 @@ const donors = [
     distance: "0.4km",
   },
   {
+    id: 8,
     name: "Sneha Mishra",
     age: 29,
     gender: "Female",
@@ -123,6 +180,7 @@ const donors = [
     distance: "0.2km",
   },
   {
+    id: 9,
     name: "Deepak Verma",
     age: 32,
     gender: "Male",
