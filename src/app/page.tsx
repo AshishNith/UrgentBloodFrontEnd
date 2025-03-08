@@ -5,10 +5,10 @@ import { LampDemo } from '@/components/Hero'
 import {WorldMapDemo} from '@/components/Map'
 import { TimelineDemo } from '@/components/Timeline'
 import {FloatingNavDemo} from '@/components/Header_Hero'
-import { Donors } from '@/components/Donors'
 import ChatBot from '@/components/ChatBot'
 import Map from '@/components/MapComponent'
 import CallDonor from '@/components/CallDonor'
+import CurrentLocation from '@/components/CurrentLocation'
 
 export default function page() {
   return (
@@ -19,6 +19,7 @@ export default function page() {
       <LampDemo />
       <CallDonor />
       <Donors/>
+      <CurrentLocation />
       <Map/>
       <WorldMapDemo/>
       <TimelineDemo/>

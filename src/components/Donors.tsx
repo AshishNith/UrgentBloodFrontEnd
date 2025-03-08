@@ -8,6 +8,10 @@ export const Donors = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [loadingStates, setLoadingStates] = useState<{ [key: number]: boolean }>({});
   const [notifications, setNotifications] = useState<any[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [message, setMessage] = useState("");
+  const [selectedDonor, setSelectedDonor] = useState<typeof donors[0] | null>(null);
 
   // Load notifications from localStorage on component mount
   useEffect(() => {
@@ -24,7 +28,9 @@ export const Donors = () => {
       donorName: donor.name,
       bloodType: donor.bloodType,
       timestamp: new Date().toISOString(),
-      status: 'pending'
+      status: 'pending',
+      phoneNumber,
+      message,
     };
 
     // Save to localStorage
@@ -39,12 +45,28 @@ export const Donors = () => {
     return new Promise(resolve => setTimeout(resolve, 1000));
   };
 
-  const handleRequestClick = async (donor: typeof donors[0], index: number) => {
+  const handleRequestClick = (donor: typeof donors[0]) => {
+    setSelectedDonor(donor);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedDonor(null);
+    setPhoneNumber("");
+    setMessage("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedDonor) return;
+
+    const index = donors.findIndex(donor => donor.id === selectedDonor.id);
     setLoadingStates(prev => ({ ...prev, [index]: true }));
     
     try {
-      await sendNotificationToDonor(donor);
-      toast.success(`Request sent to ${donor.name}! They will be notified immediately.`);
+      await sendNotificationToDonor(selectedDonor);
+      toast.success(`Request sent to ${selectedDonor.name}! They will be notified immediately.`);
       
       // Show notification count
       const count = notifications.length + 1;
@@ -53,12 +75,12 @@ export const Donors = () => {
       toast.error("Something went wrong. Please try again.");
     } finally {
       setLoadingStates(prev => ({ ...prev, [index]: false }));
+      handleModalClose();
     }
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-2 mb-6">
-      <h1 className="text-3xl font-bold text-center mb-8 pt-10">Donors Nearby You</h1>
+    <div className="max-w-6xl mx-auto px-2 mb-6 relative">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {donors.map((donor, idx) => (
           <div
@@ -97,7 +119,7 @@ export const Donors = () => {
                 {donor.distance} away from you
               </p>
               <button
-                onClick={() => handleRequestClick(donor, idx)}
+                onClick={() => handleRequestClick(donor)}
                 disabled={loadingStates[idx]}
                 className={`mt-4 px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors w-full ${
                   loadingStates[idx] ? 'opacity-50 cursor-not-allowed' : ''
@@ -109,6 +131,71 @@ export const Donors = () => {
           </div>
         ))}
       </div>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            onClick={handleModalClose}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="bg-white rounded-lg p-6 w-full max-w-md z-50"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-bold mb-4">Emergency Request</h2>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2" htmlFor="phoneNumber">
+                    Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    id="phoneNumber"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2" htmlFor="message">
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleModalClose}
+                    className="mr-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                  >
+                    Send Request
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -188,4 +275,3 @@ const donors = [
     distance: "9.1km",
   },
 ];
-

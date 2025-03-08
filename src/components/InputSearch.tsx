@@ -30,6 +30,7 @@ export default function PlaceholdersAndVanishInputDemo() {
         onChange={handleChange}
         onSubmit={onSubmit}
       />
+      <h1>Your location</h1>
     </div>
   );
 }
