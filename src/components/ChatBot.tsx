@@ -109,6 +109,61 @@ const ChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
+  const donors = [
+    // A+ Donors
+    { name: "Rahul Sharma", age: 28, gender: "Male", bloodType: "A+", distance: "2.3km" },
+    { name: "Priya Patel", age: 25, gender: "Female", bloodType: "A+", distance: "4.5km" },
+    { name: "Amit Singh", age: 30, gender: "Male", bloodType: "A+", distance: "1.2km" },
+    { name: "Neha Gupta", age: 22, gender: "Female", bloodType: "A+", distance: "3.8km" },
+    { name: "Vikram Yadav", age: 35, gender: "Male", bloodType: "A+", distance: "5.9km" },
+  
+    // A- Donors
+    { name: "Anjali Desai", age: 27, gender: "Female", bloodType: "A-", distance: "3.0km" },
+    { name: "Rajesh Kumar", age: 40, gender: "Male", bloodType: "A-", distance: "6.5km" },
+    { name: "Sneha Mishra", age: 29, gender: "Female", bloodType: "A-", distance: "7.1km" },
+  
+    // B+ Donors
+    { name: "Ravi Malhotra", age: 34, gender: "Male", bloodType: "B+", distance: "8.2km" },
+    { name: "Sunita Reddy", age: 26, gender: "Female", bloodType: "B+", distance: "4.0km" },
+    { name: "Arun Khanna", age: 38, gender: "Male", bloodType: "B+", distance: "5.5km" },
+    { name: "Meena Kapoor", age: 24, gender: "Female", bloodType: "B+", distance: "9.0km" },
+    { name: "Vivek Bhatia", age: 33, gender: "Male", bloodType: "B+", distance: "2.7km" },
+  
+    // B- Donors
+    { name: "Pooja Mehta", age: 29, gender: "Female", bloodType: "B-", distance: "3.4km" },
+    { name: "Sanjay Rao", age: 36, gender: "Male", bloodType: "B-", distance: "8.8km" },
+    { name: "Anita Choudhary", age: 23, gender: "Female", bloodType: "B-", distance: "6.9km" },
+    { name: "Rakesh Nair", age: 37, gender: "Male", bloodType: "B-", distance: "2.1km" },
+    { name: "Divya Iyer", age: 28, gender: "Female", bloodType: "B-", distance: "7.7km" },
+  
+    // O+ Donors
+    { name: "Rahul Mehta", age: 30, gender: "Male", bloodType: "O+", distance: "5.6km" },
+    { name: "Priya Reddy", age: 26, gender: "Female", bloodType: "O+", distance: "9.3km" },
+    { name: "Amit Khanna", age: 32, gender: "Male", bloodType: "O+", distance: "6.0km" },
+    { name: "Neha Kapoor", age: 24, gender: "Female", bloodType: "O+", distance: "1.5km" },
+    { name: "Vikram Bhatia", age: 35, gender: "Male", bloodType: "O+", distance: "4.9km" },
+  
+    // O- Donors
+    { name: "Anjali Nair", age: 27, gender: "Female", bloodType: "O-", distance: "2.8km" },
+    { name: "Rajesh Iyer", age: 40, gender: "Male", bloodType: "O-", distance: "3.2km" },
+    { name: "Sneha Rao", age: 29, gender: "Female", bloodType: "O-", distance: "5.0km" },
+    { name: "Deepak Malhotra", age: 32, gender: "Male", bloodType: "O-", distance: "7.3km" },
+    { name: "Kavita Bhatia", age: 31, gender: "Female", bloodType: "O-", distance: "4.7km" },
+  
+    // AB+ Donors
+    { name: "Rahul Yadav", age: 28, gender: "Male", bloodType: "AB+", distance: "3.6km" },
+    { name: "Priya Sharma", age: 25, gender: "Female", bloodType: "AB+", distance: "8.5km" },
+    { name: "Amit Patel", age: 30, gender: "Male", bloodType: "AB+", distance: "1.9km" },
+    { name: "Neha Singh", age: 22, gender: "Female", bloodType: "AB+", distance: "6.4km" },
+    { name: "Vikram Gupta", age: 35, gender: "Male", bloodType: "AB+", distance: "7.8km" },
+  
+    // AB- Donors
+    { name: "Anjali Yadav", age: 27, gender: "Female", bloodType: "AB-", distance: "5.2km" },
+    { name: "Rajesh Sharma", age: 40, gender: "Male", bloodType: "AB-", distance: "9.1km" },
+    { name: "Sneha Patel", age: 29, gender: "Female", bloodType: "AB-", distance: "4.3km" },
+    { name: "Deepak Singh", age: 32, gender: "Male", bloodType: "AB-", distance: "2.0km" },
+    { name: "Kavita Gupta", age: 31, gender: "Female", bloodType: "AB-", distance: "3.9km" },
+  ];
   const getBotResponse = async (userMessage: string): Promise<string> => {
     try {
       setIsTyping(true);

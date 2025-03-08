@@ -6,9 +6,25 @@ import { useState } from "react";
 
 export const Donors = ({ bloodType }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleRequestClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission (e.g., send data to an API)
+    console.log("Phone Number:", phoneNumber);
+    console.log("Message:", message);
     toast.success("Request sent successfully!");
+    setIsModalOpen(false);
   };
 
   const donors = [
@@ -18,47 +34,47 @@ export const Donors = ({ bloodType }) => {
     { name: "Amit Singh", age: 30, gender: "Male", bloodType: "A+", distance: "1.2km" },
     { name: "Neha Gupta", age: 22, gender: "Female", bloodType: "A+", distance: "3.8km" },
     { name: "Vikram Yadav", age: 35, gender: "Male", bloodType: "A+", distance: "5.9km" },
-  
+
     // A- Donors
     { name: "Anjali Desai", age: 27, gender: "Female", bloodType: "A-", distance: "3.0km" },
     { name: "Rajesh Kumar", age: 40, gender: "Male", bloodType: "A-", distance: "6.5km" },
     { name: "Sneha Mishra", age: 29, gender: "Female", bloodType: "A-", distance: "7.1km" },
-  
+
     // B+ Donors
     { name: "Ravi Malhotra", age: 34, gender: "Male", bloodType: "B+", distance: "8.2km" },
     { name: "Sunita Reddy", age: 26, gender: "Female", bloodType: "B+", distance: "4.0km" },
     { name: "Arun Khanna", age: 38, gender: "Male", bloodType: "B+", distance: "5.5km" },
     { name: "Meena Kapoor", age: 24, gender: "Female", bloodType: "B+", distance: "9.0km" },
     { name: "Vivek Bhatia", age: 33, gender: "Male", bloodType: "B+", distance: "2.7km" },
-  
+
     // B- Donors
     { name: "Pooja Mehta", age: 29, gender: "Female", bloodType: "B-", distance: "3.4km" },
     { name: "Sanjay Rao", age: 36, gender: "Male", bloodType: "B-", distance: "8.8km" },
     { name: "Anita Choudhary", age: 23, gender: "Female", bloodType: "B-", distance: "6.9km" },
     { name: "Rakesh Nair", age: 37, gender: "Male", bloodType: "B-", distance: "2.1km" },
     { name: "Divya Iyer", age: 28, gender: "Female", bloodType: "B-", distance: "7.7km" },
-  
+
     // O+ Donors
     { name: "Rahul Mehta", age: 30, gender: "Male", bloodType: "O+", distance: "5.6km" },
     { name: "Priya Reddy", age: 26, gender: "Female", bloodType: "O+", distance: "9.3km" },
     { name: "Amit Khanna", age: 32, gender: "Male", bloodType: "O+", distance: "6.0km" },
     { name: "Neha Kapoor", age: 24, gender: "Female", bloodType: "O+", distance: "1.5km" },
     { name: "Vikram Bhatia", age: 35, gender: "Male", bloodType: "O+", distance: "4.9km" },
-  
+
     // O- Donors
     { name: "Anjali Nair", age: 27, gender: "Female", bloodType: "O-", distance: "2.8km" },
     { name: "Rajesh Iyer", age: 40, gender: "Male", bloodType: "O-", distance: "3.2km" },
     { name: "Sneha Rao", age: 29, gender: "Female", bloodType: "O-", distance: "5.0km" },
     { name: "Deepak Malhotra", age: 32, gender: "Male", bloodType: "O-", distance: "7.3km" },
     { name: "Kavita Bhatia", age: 31, gender: "Female", bloodType: "O-", distance: "4.7km" },
-  
+
     // AB+ Donors
     { name: "Rahul Yadav", age: 28, gender: "Male", bloodType: "AB+", distance: "3.6km" },
     { name: "Priya Sharma", age: 25, gender: "Female", bloodType: "AB+", distance: "8.5km" },
     { name: "Amit Patel", age: 30, gender: "Male", bloodType: "AB+", distance: "1.9km" },
     { name: "Neha Singh", age: 22, gender: "Female", bloodType: "AB+", distance: "6.4km" },
     { name: "Vikram Gupta", age: 35, gender: "Male", bloodType: "AB+", distance: "7.8km" },
-  
+
     // AB- Donors
     { name: "Anjali Yadav", age: 27, gender: "Female", bloodType: "AB-", distance: "5.2km" },
     { name: "Rajesh Sharma", age: 40, gender: "Male", bloodType: "AB-", distance: "9.1km" },
@@ -66,13 +82,12 @@ export const Donors = ({ bloodType }) => {
     { name: "Deepak Singh", age: 32, gender: "Male", bloodType: "AB-", distance: "2.0km" },
     { name: "Kavita Gupta", age: 31, gender: "Female", bloodType: "AB-", distance: "3.9km" },
   ];
-  
 
   // Filter donors based on the selected blood type
   const filteredDonors = donors.filter((donor) => donor.bloodType === bloodType);
 
   return (
-    <div className="max-w-6xl mx-auto px-2 mb-6">
+    <div className="max-w-6xl mx-auto px-2 mb-6 relative">
       <h1 className="text-3xl font-bold text-center mb-8 pt-10">
         Donors with Blood Type {bloodType}
       </h1>
@@ -123,6 +138,71 @@ export const Donors = ({ bloodType }) => {
           </div>
         ))}
       </div>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            onClick={handleModalClose}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="bg-white rounded-lg p-6 w-full max-w-md z-50"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-bold mb-4">Emergency Request</h2>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2" htmlFor="phoneNumber">
+                    Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    id="phoneNumber"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2" htmlFor="message">
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleModalClose}
+                    className="mr-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                  >
+                    Send Request
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
