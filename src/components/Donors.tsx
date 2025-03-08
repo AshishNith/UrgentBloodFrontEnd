@@ -139,14 +139,14 @@ export const Donors = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[1000]" // Increased z-index
             onClick={handleModalClose}
           >
             <motion.div
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
-              className="bg-white rounded-lg p-6 w-full max-w-md z-50"
+              className="bg-white rounded-lg p-6 w-full max-w-md z-[1001]" // Increased z-index
               onClick={(e) => e.stopPropagation()}
             >
               <h2 className="text-xl font-bold mb-4">Emergency Request</h2>

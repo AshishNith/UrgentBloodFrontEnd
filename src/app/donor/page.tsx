@@ -15,6 +15,7 @@ export default function DonorRegistrationPage() {
     role: "donor",
     bloodType: "",
     location: "",
+    phoneNumber: "", // Add phone number to the form data
   });
 
   const [loading, setLoading] = useState(false);
@@ -29,8 +30,8 @@ export default function DonorRegistrationPage() {
     setLoading(true);
 
     // Frontend validation
-    if (!formData.bloodType || !formData.location) {
-      toast.error("Blood type and location are required for donors");
+    if (!formData.bloodType || !formData.location || !formData.phoneNumber) {
+      toast.error("Blood type, location, and phone number are required for donors");
       setLoading(false);
       return;
     }
@@ -180,6 +181,25 @@ export default function DonorRegistrationPage() {
                 id="location"
                 name="location"
                 value={formData.location}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
+            {/* Phone Number */}
+            <div>
+              <label
+                htmlFor="phoneNumber"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                id="phoneNumber"
+                name="phoneNumber"
+                value={formData.phoneNumber}
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"

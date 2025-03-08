@@ -3,99 +3,22 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaRobot, FaTimes, FaPaperPlane } from "react-icons/fa";
 
-// Add donor data
-const donors = [
-  // ...your donors array...
-];
-
-// Add predefined responses
-const PREDEFINED_RESPONSES = {
-  greeting: [
-    "Hello! I'm here to help you find blood donors. How can I assist you today?",
-    "Hi! Need help finding blood donors? Just ask me about specific blood types or nearby donors.",
-    "Welcome! I can help you locate blood donors. What type of blood are you looking for?"
-  ],
-  bloodTypes: {
-    "A+": `We have ${donors.filter(d => d.bloodType === "A+").length} A+ donors available.`,
-    "A-": `We have ${donors.filter(d => d.bloodType === "A-").length} A- donors available.`,
-    "B+": `We have ${donors.filter(d => d.bloodType === "B+").length} B+ donors available.`,
-    "B-": `We have ${donors.filter(d => d.bloodType === "B-").length} B- donors available.`,
-    "O+": `We have ${donors.filter(d => d.bloodType === "O+").length} O+ donors available.`,
-    "O-": `We have ${donors.filter(d => d.bloodType === "O-").length} O- donors available.`,
-    "AB+": `We have ${donors.filter(d => d.bloodType === "AB+").length} AB+ donors available.`,
-    "AB-": `We have ${donors.filter(d => d.bloodType === "AB-").length} AB- donors available.`,
-  },
-  nearbyDonors: (type: string) => {
-    const matchingDonors = donors
-      .filter(d => d.bloodType === type)
-      .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
-      .slice(0, 3);
-    
-    return matchingDonors.length > 0
-      ? `Nearest ${type} donors:\n${matchingDonors.map(d => 
-          `${d.name} (${d.age}, ${d.gender}) - ${d.distance} away`
-        ).join('\n')}`
-      : `Sorry, no ${type} donors found nearby.`;
-  },
-  default: "I'm not sure about that. Try asking about specific blood types or nearby donors."
-};
-
-const getBotResponseFromInput = (input: string): string => {
-  const lowerInput = input.toLowerCase();
-
-  // Check for greetings
-  if (lowerInput.match(/^(hi|hello|hey|greetings)/)) {
-    return PREDEFINED_RESPONSES.greeting[Math.floor(Math.random() * PREDEFINED_RESPONSES.greeting.length)];
-  }
-
-  // Check for blood type queries
-  const bloodTypeMatch = input.match(/(A|B|O|AB)[+-]/i);
-  if (bloodTypeMatch) {
-    const bloodType = bloodTypeMatch[0].toUpperCase();
-    if (lowerInput.includes('nearby') || lowerInput.includes('close') || lowerInput.includes('near me')) {
-      return PREDEFINED_RESPONSES.nearbyDonors(bloodType);
-    }
-    return PREDEFINED_RESPONSES.bloodTypes[bloodType] || PREDEFINED_RESPONSES.default;
-  }
-
-  // Check for general queries
-  if (lowerInput.includes('donor')) {
-    return `We have ${donors.length} total donors in our database. What blood type are you looking for?`;
-  }
-
-  if (lowerInput.includes('blood type') || lowerInput.includes('blood group')) {
-    return "I can help you find donors for any blood type (A+, A-, B+, B-, O+, O-, AB+, AB-). Which one do you need?";
-  }
-
-  if (lowerInput.includes('emergency') || lowerInput.includes('urgent')) {
-    return "For emergencies, I recommend checking O- donors as they are universal donors. Would you like me to find nearby O- donors?";
-  }
-
-  // Set of questions to ask the user
-  const questions = [
-    "What is your blood type?",
-    "Are you looking for donors nearby?",
-    "Do you need help with an emergency request?",
-    "Would you like to know the total number of donors available?",
-    "Is there a specific age range you are looking for in donors?"
-  ];
-
-  if (lowerInput.includes('questions')) {
-    return `Here are some questions you can ask me:\n- ${questions.join('\n- ')}`;
-  }
-
-  return PREDEFINED_RESPONSES.default;
-};
+interface Message {
+  id: number;
+  text: string;
+  sender: 'user' | 'bot';
+  timestamp: Date;
+}
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Hello! How can I help you with blood donation today?",
-      sender: "bot",
-      timestamp: new Date(),
-    },
+      text: "Hello! I'm your blood donation assistant. How can I help you today?",
+      sender: 'bot',
+      timestamp: new Date()
+    }
   ]);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -109,70 +32,33 @@ const ChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
-  const donors = [
-    // A+ Donors
-    { name: "Rahul Sharma", age: 28, gender: "Male", bloodType: "A+", distance: "2.3km" },
-    { name: "Priya Patel", age: 25, gender: "Female", bloodType: "A+", distance: "4.5km" },
-    { name: "Amit Singh", age: 30, gender: "Male", bloodType: "A+", distance: "1.2km" },
-    { name: "Neha Gupta", age: 22, gender: "Female", bloodType: "A+", distance: "3.8km" },
-    { name: "Vikram Yadav", age: 35, gender: "Male", bloodType: "A+", distance: "5.9km" },
-  
-    // A- Donors
-    { name: "Anjali Desai", age: 27, gender: "Female", bloodType: "A-", distance: "3.0km" },
-    { name: "Rajesh Kumar", age: 40, gender: "Male", bloodType: "A-", distance: "6.5km" },
-    { name: "Sneha Mishra", age: 29, gender: "Female", bloodType: "A-", distance: "7.1km" },
-  
-    // B+ Donors
-    { name: "Ravi Malhotra", age: 34, gender: "Male", bloodType: "B+", distance: "8.2km" },
-    { name: "Sunita Reddy", age: 26, gender: "Female", bloodType: "B+", distance: "4.0km" },
-    { name: "Arun Khanna", age: 38, gender: "Male", bloodType: "B+", distance: "5.5km" },
-    { name: "Meena Kapoor", age: 24, gender: "Female", bloodType: "B+", distance: "9.0km" },
-    { name: "Vivek Bhatia", age: 33, gender: "Male", bloodType: "B+", distance: "2.7km" },
-  
-    // B- Donors
-    { name: "Pooja Mehta", age: 29, gender: "Female", bloodType: "B-", distance: "3.4km" },
-    { name: "Sanjay Rao", age: 36, gender: "Male", bloodType: "B-", distance: "8.8km" },
-    { name: "Anita Choudhary", age: 23, gender: "Female", bloodType: "B-", distance: "6.9km" },
-    { name: "Rakesh Nair", age: 37, gender: "Male", bloodType: "B-", distance: "2.1km" },
-    { name: "Divya Iyer", age: 28, gender: "Female", bloodType: "B-", distance: "7.7km" },
-  
-    // O+ Donors
-    { name: "Rahul Mehta", age: 30, gender: "Male", bloodType: "O+", distance: "5.6km" },
-    { name: "Priya Reddy", age: 26, gender: "Female", bloodType: "O+", distance: "9.3km" },
-    { name: "Amit Khanna", age: 32, gender: "Male", bloodType: "O+", distance: "6.0km" },
-    { name: "Neha Kapoor", age: 24, gender: "Female", bloodType: "O+", distance: "1.5km" },
-    { name: "Vikram Bhatia", age: 35, gender: "Male", bloodType: "O+", distance: "4.9km" },
-  
-    // O- Donors
-    { name: "Anjali Nair", age: 27, gender: "Female", bloodType: "O-", distance: "2.8km" },
-    { name: "Rajesh Iyer", age: 40, gender: "Male", bloodType: "O-", distance: "3.2km" },
-    { name: "Sneha Rao", age: 29, gender: "Female", bloodType: "O-", distance: "5.0km" },
-    { name: "Deepak Malhotra", age: 32, gender: "Male", bloodType: "O-", distance: "7.3km" },
-    { name: "Kavita Bhatia", age: 31, gender: "Female", bloodType: "O-", distance: "4.7km" },
-  
-    // AB+ Donors
-    { name: "Rahul Yadav", age: 28, gender: "Male", bloodType: "AB+", distance: "3.6km" },
-    { name: "Priya Sharma", age: 25, gender: "Female", bloodType: "AB+", distance: "8.5km" },
-    { name: "Amit Patel", age: 30, gender: "Male", bloodType: "AB+", distance: "1.9km" },
-    { name: "Neha Singh", age: 22, gender: "Female", bloodType: "AB+", distance: "6.4km" },
-    { name: "Vikram Gupta", age: 35, gender: "Male", bloodType: "AB+", distance: "7.8km" },
-  
-    // AB- Donors
-    { name: "Anjali Yadav", age: 27, gender: "Female", bloodType: "AB-", distance: "5.2km" },
-    { name: "Rajesh Sharma", age: 40, gender: "Male", bloodType: "AB-", distance: "9.1km" },
-    { name: "Sneha Patel", age: 29, gender: "Female", bloodType: "AB-", distance: "4.3km" },
-    { name: "Deepak Singh", age: 32, gender: "Male", bloodType: "AB-", distance: "2.0km" },
-    { name: "Kavita Gupta", age: 31, gender: "Female", bloodType: "AB-", distance: "3.9km" },
-  ];
   const getBotResponse = async (userMessage: string): Promise<string> => {
     try {
       setIsTyping(true);
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return getBotResponseFromInput(userMessage);
+      console.log('Sending to server:', userMessage);
+
+      const response = await fetch('http://127.0.0.1:5000/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          "message": userMessage,
+        }),
+      });
+
+      console.log('Server response status:', response.status);
+      const data = await response.json();
+      console.log('Server response data:', data);
+
+      if (!response.ok) {
+        throw new Error('Server response not ok');
+      }
+
+      return data.response || "Sorry, I couldn't process that request.";
     } catch (error) {
-      console.error("Chat error:", error);
-      return "I'm having trouble understanding. Please try asking about specific blood types or nearby donors.";
+      console.error("Error getting bot response:", error);
+      return "I'm having trouble connecting to the server. Please try again later.";
     } finally {
       setIsTyping(false);
     }
@@ -184,39 +70,31 @@ const ChatBot = () => {
 
     try {
       // Add user message
-      const userMessage = {
+      const userMessage: Message = {
         id: Date.now(),
         text: inputMessage,
-        sender: "user",
-        timestamp: new Date(),
+        sender: 'user',
+        timestamp: new Date()
       };
 
-      setMessages((prev) => [...prev, userMessage]);
+      setMessages(prev => [...prev, userMessage]);
       setInputMessage("");
       setIsTyping(true);
 
       // Get bot response
       const botResponse = await getBotResponse(inputMessage);
-
+      
       // Add bot message
-      const botMessage = {
+      const botMessage: Message = {
         id: Date.now() + 1,
         text: botResponse,
-        sender: "bot",
-        timestamp: new Date(),
+        sender: 'bot',
+        timestamp: new Date()
       };
 
-      setMessages((prev) => [...prev, botMessage]);
+      setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error("Chat error:", error);
-      // Display an error message to the user
-      const errorMessage = {
-        id: Date.now() + 1,
-        text: "Sorry, I'm having trouble connecting to my brain right now. Please try again in a moment.",
-        sender: "bot",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
     }
   };
 
@@ -231,12 +109,10 @@ const ChatBot = () => {
             <FaRobot size={24} className="text-white group-hover:scale-110 transition-transform" />
           </div>
         </button>
-        {!isOpen && <div className="absolute w-full h-full animate-spin-slow">{/* CircularText component can be added here */}</div>}
       </div>
 
       {isOpen && (
         <div className="fixed bottom-20 right-4 bg-white rounded-lg shadow-xl w-96 max-w-[calc(100vw-2rem)] z-50">
-          {/* Chat Header */}
           <div className="bg-red-500 text-white p-4 rounded-t-lg flex justify-between items-center">
             <h2 className="font-bold text-lg">Blood Donation Assistant</h2>
             <button onClick={() => setIsOpen(false)} className="hover:text-gray-200">
@@ -244,18 +120,17 @@ const ChatBot = () => {
             </button>
           </div>
 
-          {/* Chat Messages */}
           <div className="h-96 overflow-y-auto p-4 bg-gray-50">
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`mb-4 flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                className={`mb-4 flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
                   className={`max-w-[80%] p-3 rounded-lg ${
-                    message.sender === "user"
-                      ? "bg-red-500 text-white rounded-br-none"
-                      : "bg-gray-200 text-gray-800 rounded-bl-none"
+                    message.sender === 'user'
+                      ? 'bg-red-500 text-white rounded-br-none'
+                      : 'bg-gray-200 text-gray-800 rounded-bl-none'
                   }`}
                 >
                   {message.text}
@@ -272,7 +147,6 @@ const ChatBot = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Chat Input */}
           <form onSubmit={handleSubmit} className="p-4 border-t flex gap-2">
             <input
               type="text"
