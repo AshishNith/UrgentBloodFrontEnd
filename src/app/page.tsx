@@ -5,6 +5,7 @@ import { TimelineDemo } from '@/components/Timeline'
 import {FloatingNavDemo} from '@/components/Header_Hero'
 import { Donors } from '@/components/Donors'
 import ChatBot from '@/components/ChatBot'
+import Map from '@/components/MapComponent'
 
 export default function page() {
   return (
@@ -14,6 +15,7 @@ export default function page() {
       <FloatingNavDemo/>
       <LampDemo />
       <Donors/>
+      <Map/>
       <WorldMapDemo/>
       <TimelineDemo/>
       <ChatBot /> 
