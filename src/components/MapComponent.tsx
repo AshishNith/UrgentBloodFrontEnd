@@ -73,7 +73,7 @@ const Map = () => {
   };
 
   // Debounced version of fetchSuggestions
-  const debouncedFetchSuggestions = useCallback(debounce(fetchSuggestions, 200), []);
+  const debouncedFetchSuggestions = useCallback(debounce(fetchSuggestions, 150), []);
 
   // Handle search input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,27 +119,22 @@ const Map = () => {
   };
 
   return (
-    <div className='px-10'>
-      <div style={{ marginBottom: '10px' }}>
+    <div className="p-4 px-10">
+      <div className="mb-2.5">
         <input
           type="text"
           placeholder="Search for a location..."
           value={searchQuery}
           onChange={handleInputChange}
-          style={{ width: '100%', padding: '8px' }}
+          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {suggestions.length > 0 && (
-          <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
+          <ul className="list-none p-0 m-0 mt-2 border border-gray-200 rounded-md">
             {suggestions.map((suggestion, index) => (
               <li
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                style={{
-                  padding: '8px',
-                  cursor: 'pointer',
-                  backgroundColor: '#f9f9f9',
-                  borderBottom: '1px solid #ddd',
-                }}
+                className="p-2 cursor-pointer hover:bg-gray-100 border-b border-gray-200 last:border-b-0"
               >
                 {suggestion.display_name}
               </li>
@@ -147,7 +142,7 @@ const Map = () => {
           </ul>
         )}
       </div>
-      <div id="map" style={{ height: '80vh', width: '100%' }} />
+      <div id="map" className="h-[80vh] w-full" />
     </div>
   );
 };
