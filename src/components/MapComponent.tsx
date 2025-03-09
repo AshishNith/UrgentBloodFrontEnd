@@ -1,6 +1,6 @@
 // components/Map.tsx
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
@@ -23,6 +23,15 @@ const redIcon = L.icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
 });
+
+// Debounce function
+const debounce = (func: (...args: any[]) => void, delay: number) => {
+  let timeoutId: NodeJS.Timeout;
+  return (...args: any[]) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};
 
 const Map = () => {
   const [map, setMap] = useState<L.Map | null>(null);
@@ -48,7 +57,10 @@ const Map = () => {
 
   // Fetch autocomplete suggestions from Nominatim API
   const fetchSuggestions = async (query: string) => {
-    if (query.length < 3) return; // Only search if the query has at least 3 characters
+    if (query.length < 3) {
+      setSuggestions([]); // Clear suggestions if the query is too short
+      return;
+    }
 
     try {
       const response = await axios.get(
@@ -60,11 +72,14 @@ const Map = () => {
     }
   };
 
+  // Debounced version of fetchSuggestions
+  const debouncedFetchSuggestions = useCallback(debounce(fetchSuggestions, 200), []);
+
   // Handle search input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
-    fetchSuggestions(query);
+    debouncedFetchSuggestions(query); // Use the debounced function
   };
 
   // Handle selection of a suggestion
@@ -104,7 +119,7 @@ const Map = () => {
   };
 
   return (
-    <div>
+    <div className='px-10'>
       <div style={{ marginBottom: '10px' }}>
         <input
           type="text"
