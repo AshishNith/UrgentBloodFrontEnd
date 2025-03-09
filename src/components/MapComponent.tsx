@@ -33,6 +33,16 @@ const debounce = (func: (...args: any[]) => void, delay: number) => {
   };
 };
 
+// Function to calculate the bearing between two points
+const calculateBearing = (lat1: number, lon1: number, lat2: number, lon2: number): string => {
+  const toRadians = (degrees: number) => degrees * (Math.PI / 180);
+  const deltaLon = toRadians(lon2 - lon1);
+  const y = Math.sin(deltaLon) * Math.cos(toRadians(lat2));
+  const x = Math.cos(toRadians(lat1)) * Math.sin(toRadians(lat2)) - Math.sin(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.cos(deltaLon);
+  const bearing = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  return bearing.toFixed(2) + '°';
+};
+
 const Map = () => {
   const [map, setMap] = useState<L.Map | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,7 +93,7 @@ const Map = () => {
   };
 
   // Handle selection of a suggestion
-  const handleSuggestionClick = (suggestion: any) => {
+  const handleSuggestionClick = async (suggestion: any) => {
     if (!map) return;
 
     const { lat, lon, display_name } = suggestion;
@@ -96,7 +106,7 @@ const Map = () => {
     });
 
     // Add a marker for the searched location
-    L.marker([parseFloat(lat), parseFloat(lon)], { icon: blueIcon })
+    const searchedMarker = L.marker([parseFloat(lat), parseFloat(lon)], { icon: blueIcon })
       .addTo(map)
       .bindPopup(display_name)
       .openPopup();
@@ -104,13 +114,46 @@ const Map = () => {
     // Move the map to the searched location
     map.setView([parseFloat(lat), parseFloat(lon)], 13);
 
-    // Add 4-5 random markers nearby
+    // Add 5 random markers nearby
+    const randomMarkers = [];
     for (let i = 0; i < 5; i++) {
       const randomLat = parseFloat(lat) + (Math.random() - 0.5) * 0.1;
       const randomLon = parseFloat(lon) + (Math.random() - 0.5) * 0.1;
-      L.marker([randomLat, randomLon], { icon: redIcon })
+      const randomMarker = L.marker([randomLat, randomLon], { icon: redIcon })
         .addTo(map)
         .bindPopup(`Random Location ${i + 1}`);
+      randomMarkers.push({ lat: randomLat, lon: randomLon, marker: randomMarker });
+    }
+
+    // Calculate distance, time, and direction for each random marker
+    for (const randomMarker of randomMarkers) {
+      try {
+        const response = await axios.get(
+          `https://api.openrouteservice.org/v2/directions/foot-walking`,
+          {
+            params: {
+              api_key: 'YOUR_OPENROUTESERVICE_API_KEY', // Replace with your API key
+              start: `${lon},${lat}`,
+              end: `${randomMarker.lon},${randomMarker.lat}`,
+            },
+          }
+        );
+
+        const { distance, duration } = response.data.features[0].properties;
+        const bearing = calculateBearing(parseFloat(lat), parseFloat(lon), randomMarker.lat, randomMarker.lon);
+
+        // Update the popup with distance, time, and direction
+        randomMarker.marker
+          .bindPopup(
+            `Random Location<br>
+            Distance: ${(distance / 1000).toFixed(2)} km<br>
+            Time: ${(duration / 60).toFixed(2)} mins<br>
+            Direction: ${bearing}`
+          )
+          .openPopup();
+      } catch (error) {
+        console.error('Error fetching route data:', error);
+      }
     }
 
     // Clear suggestions
