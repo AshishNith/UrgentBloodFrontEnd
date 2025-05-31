@@ -100,7 +100,7 @@ const ChatBot = () => {
 
   return (
     <div>
-      <div className="fixed bottom-4 right-4 w-16 h-16">
+      <div className="fixed bottom-4 right-4 w-16 h-16 z-[5000]">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="absolute inset-0 bg-red-500 hover:bg-red-600 transition-colors rounded-full z-10 flex items-center justify-center shadow-lg group"
@@ -112,7 +112,7 @@ const ChatBot = () => {
       </div>
 
       {isOpen && (
-        <div className="fixed bottom-20 right-4 bg-white rounded-lg shadow-xl w-96 max-w-[calc(100vw-2rem)] z-50">
+        <div className="fixed bottom-20 right-4 bg-white rounded-lg shadow-xl w-96 max-w-[calc(100vw-2rem)] z-[5000]">
           <div className="bg-red-500 text-white p-4 rounded-t-lg flex justify-between items-center">
             <h2 className="font-bold text-lg">Blood Donation Assistant</h2>
             <button onClick={() => setIsOpen(false)} className="hover:text-gray-200">

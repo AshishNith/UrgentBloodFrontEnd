@@ -20,8 +20,8 @@ export default function page() {
       <CallDonor />
       <Donors/>
       <CurrentLocation />
-      <Map/>
       <WorldMapDemo/>
+      <Map/>
       <TimelineDemo/>
       <ChatBot /> 
       
